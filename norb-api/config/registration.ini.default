@@ -1,0 +1,9 @@
+[Registration]
+; Registration Enabled
+Enabled = true
+; Minimum Password Length
+MinLength = 8
+; Password Requires Letters
+Letters = true
+; Password Requires Digits
+Digits = true
