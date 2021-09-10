@@ -1,0 +1,8 @@
+<IfModule mod_ratelimit.c >
+SetOutputFilter RATE_LIMIT
+#SetEnv rate-limit 1
+#SetEnv rate-initial-burst 0
+</IfModule>
+<IfModule mod_headers.c>
+Header set rate-limit "activated"
+</IfModule>

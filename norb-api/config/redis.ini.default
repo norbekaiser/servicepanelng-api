@@ -1,0 +1,10 @@
+[Redis]
+; The Hostname to which the Session Management will connect
+Hostname = 'localhost'
+; The Port
+Port = 6379
+; An Optional Password, if empty or not existing it will be ommited
+Password = ''
+; The Redis Database, defaults  to 0
+DatabaseID = 0
+
