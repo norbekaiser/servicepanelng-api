@@ -1,7 +1,0 @@
-[recaptcha]
-; Defaults to false
-Enabled = false
-; Defaults to Version 2
-Version = 2
-; Defaults to Empty String
-SecretKey = mysecretkey
