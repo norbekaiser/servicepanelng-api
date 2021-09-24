@@ -1,0 +1,188 @@
+stages:
+  - testing
+  - prepare
+  - deploy
+php_7.3_lint:
+  stage: testing
+  image: php:7.3-cli
+  script:
+    - find . -iname "*.php" | xargs -I{} bash -c 'echo "Processing {}" && php -l {}'
+php_7.4_lint:
+  stage: testing
+  image: php:7.4-cli
+  script:
+    - find . -iname "*.php" | xargs -I{} bash -c 'echo "Processing {}" && php -l {}'
+php_7.3_lib:
+  stage: testing
+  image: php:7.3-cli
+  script:
+    - find lib -iname "*.php" | xargs -I{} bash -c 'echo "Processing {}" && php -f {}'
+php_7.4_lib:
+  stage: testing
+  image: php:7.4-cli
+  script:
+    - find lib -iname "*.php" | xargs -I{} bash -c 'echo "Processing {}" && php -f {}'
+phpstan_level_5:
+  stage: testing
+  image:
+    name: phpstan/phpstan
+    entrypoint: [""]
+  script:
+    - phpstan analyze lib --no-progress --level 5
+csplit_verify_markdown_structure:
+  stage: testing
+  image: debian:latest
+  script:
+    - |
+      echo "Splitting Markdown Files in HTML Directory, those should contain Api Descriptions"
+      find html -iname "*.md" | xargs -I{} bash -c 'csplit {} "/^# /" {*} --elide-empty-files --silent --prefix={}'
+    - |
+      echo "Verifying that for each existing Documentation, Headings and short Descriptions Exist"
+      find html -iname "*.md" | xargs -I{} bash -c 'test -f {}00 && cat {}00 || echo \"File Missing {}00 \"'
+    - |
+      echo "Splitting Documentation by HTTP Functions where HTTP Documentation is expected"
+      find html -iname "*.md01" | xargs -I{} bash -c 'csplit {} "/^## /" {*} --elide-empty-files --silent --prefix={}HTTP'
+    - |
+      echo "Removing Heading"
+      find html -iname "*.md01HTTP00" -delete
+    - |
+      echo "Splitting Documentation by Sub Description of HTTP Functions"
+      find html -iname "*.md01HTTP*" | xargs -I{} bash -c 'csplit {} "/^### /" {*} --elide-empty-files --silent --prefix={}SECTION'
+    - |
+      echo "Verifying that for each existing HTTP Function, they are well formatted, e.g starts with ## Function"
+      find html -iname "*.md01HTTP*SECTION00" | xargs -I{} bash -c 'echo \"Checking {}\" && head -n1 {} | grep -Po "^##\s(GET|POST|PATCH|PUT|DELETE)"'
+      echo "Verifying that for each existing HTTP Function, they are well formatted, e.g starts with ## Function"
+      find html -iname "*.md01HTTP*SECTION01" | xargs -I{} bash -c 'echo \"Checking {}\" && head -n1 {} | grep -Po "^###\sParameters"'
+      echo "Verifying that for each existing HTTP Function, they are well formatted, e.g starts with ## Function"
+      find html -iname "*.md01HTTP*SECTION02" | xargs -I{} bash -c 'echo \"Checking {}\" && head -n1 {} | grep -Po "^###\sResults"'
+generate_documentation:
+  stage: prepare
+  image: norbnorb/doxygen
+  before_script:
+    - |
+      echo "Trying to Find Querys"
+      find . -iname "*.php" -exec perl -0777 -i -pe 's/\$query.*?stmt//smg' {} \;
+  script:
+    - doxygen Doxyfile
+  artifacts:
+    paths:
+      - doxygen
+generate_source:
+  stage: prepare
+  image: norbnorb/vcs
+  before_script:
+    - apt-get update || true
+    - apt-get install -y --no-install-recommends ed
+  script:
+    - |
+       mkdir source
+       mv config source/
+       mv html source/
+       mv lib source/
+       mv scripts source/
+       mv SQL source/
+       cp LICENSE source/
+       cp README.md source/
+    - |
+      cp LICENSE LICENSE.php
+      sed -i 's/^/\/\/    /g' LICENSE.php
+      sed -i '1s/^/<?php\n/' LICENSE.php
+      echo "?>" >> LICENSE.php
+      cat LICENSE.php
+      echo "Preparing License Headers"
+      find source -type f -name "*.php" -exec bash -c "echo -e '0r LICENSE.php\nw' | ed {} " \;
+  artifacts:
+    paths:
+      - source
+pages:
+  stage: deploy
+  only:
+    - master
+  script:
+    - mv doxygen/html public
+  artifacts:
+    paths:
+      - public
+deploy_to_github:
+  stage: deploy
+  image: norbnorb/vcs
+  only:
+    - master
+  needs:
+    - generate_source
+  variables:
+    MAJOR_VERSION: '0'
+    MINOR_VERSION: '0'
+    PATCH_VERSION: '1'
+  before_script:
+    - |
+      mkdir -p ~/.ssh
+      echo "Host github.com" > ~/.ssh/config
+      echo "User git" >> ~/.ssh/config
+      echo "IdentityFile ${GITHUB_DEPLOY_KEY}" >> ~/.ssh/config
+      ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+      chmod 600 ${GITHUB_DEPLOY_KEY}
+      eval $(ssh-agent -s)
+  after_script:
+    - |
+      eval $(ssh-agent -s -k)
+      rm -rf ~/.ssh
+  script:
+    - commitmsg=$(git log -1 --pretty=%B)
+    - git clone git@github.com:norbekaiser/norb-api.git repo
+    - mv repo/.git source
+    - rsync -a --delete source/ repo/
+    - |
+      cd repo
+      git config --local user.email ci-norb-api-deploy@norbert-ruehl.de
+      git config --local user.name "Deploy Runner"
+      git add -A
+      git commit -am "[CI] ${commitmsg}" || true
+      git push -u origin master
+      git tag -d v${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION} || echo "Deleting Tag if Already Exists"
+      git tag v${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}
+      git push origin v${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION} -f
+deploy_to_gitlab:
+  stage: deploy
+  image: norbnorb/vcs
+  only:
+    - master
+  needs:
+    - generate_source
+  variables:
+    MAJOR_VERSION: '0'
+    MINOR_VERSION: '0'
+    PATCH_VERSION: '1'
+  before_script:
+    - |
+      mkdir -p ~/.ssh
+      echo "Host gitlab.com" > ~/.ssh/config
+      echo "User git" >> ~/.ssh/config
+      echo "IdentityFile ${GITLAB_DEPLOY_KEY}" >> ~/.ssh/config
+      ssh-keyscan -t rsa gitlab.com >> ~/.ssh/known_hosts
+      chmod 600 ${GITLAB_DEPLOY_KEY}
+      eval $(ssh-agent -s)
+  after_script:
+    - |
+      eval $(ssh-agent -s -k)
+      rm -rf ~/.ssh
+  script:
+    - commitmsg=$(git log -1 --pretty=%B)
+    - git clone git@gitlab.com:nerdbert/norb-api.git repo
+    - mv repo/.git source
+    - rsync -a --delete source/ repo/
+    - |
+      cd repo
+      git config --local user.email ci-norb-api-deploy@norbert-ruehl.de
+      git config --local user.name "Deploy Runner"
+      git add -A
+      git commit -am "[CI] ${commitmsg}" || true
+      git push -u origin master
+      git tag -d v${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION} || echo "Deleting Tag if Already Exists"
+      git tag v${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}
+      git push origin v${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION} -f
+
+
+
+
+

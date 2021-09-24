@@ -1,0 +1,17 @@
+; Defaults to false
+Enabled = false
+; Must be specified if enabled
+; Type = 'recaptcha'
+; Type = 'friendlycaptcha'
+
+[recaptcha]
+; Defaults to Version 2
+Version = 2
+; Defaults to Empty String
+SecretKey = mysecretkey
+
+[friendlycaptcha]
+; Defaults to Empty String
+SecretKey = mysecretkey
+; Defaults to Empty String
+SiteKey = mysecretkey
