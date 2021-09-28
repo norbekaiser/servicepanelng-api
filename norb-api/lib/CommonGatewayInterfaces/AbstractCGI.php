@@ -22,21 +22,28 @@ abstract class AbstractCGI
         $this->uri = explode('/', $this->uri);
         $this->uri = array_filter($this->uri);
         $this->uri = array_slice($this->uri,1,sizeof($this->uri));
-        try
+        if($this->reqMeth=="OPTIONS")
         {
-            $this->processRequest();
+            $this->resp['status_code_header'] = 'HTTP/1.1 200 OK';
         }
-        catch (HTTP_EXCEPTION $e)
+        else
         {
-            $this->resp['status_code_header'] = $e->getStatusCodeHeader();
-            $this->resp['error'] = $e->getMessage();
+            try
+            {
+                $this->processRequest();
+            }
+            catch (HTTP_EXCEPTION $e)
+            {
+                $this->resp['status_code_header'] = $e->getStatusCodeHeader();
+                $this->resp['error'] = $e->getMessage();
+            }
+            catch (Database_Exception $e)
+            {
+                $this->resp['status_code_header'] = 500;
+                $this->resp['error'] = $e->getMessage();
+            }
+            //todo maybe also catch server config problems like no sql or no redis or so thingies
         }
-        catch (Database_Exception $e)
-        {
-            $this->resp['status_code_header'] = 500;
-            $this->resp['error'] = $e->getMessage();
-        }
-        //todo maybe also catch server config problems like no sql or no redis or so thingies
         $this->answerRequest();
     }
 
