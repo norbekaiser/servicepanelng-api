@@ -3,11 +3,11 @@
 namespace servicepanel_ng;
 
 require_once __DIR__ . '/../../norb-api/lib/CommonGatewayInterfaces/AuthorizingAbstractCGI.php';
-require_once __DIR__ . '/../Controllers/LDAPInetOrgPersonController.php';
+require_once __DIR__ . '/../Controllers/LDAPPosixGroupController.php';
 
 use norb_api\CommonGatewayInterfaces\AuthorizingAbstractCGI;
 
-class CGI_LDAP_InetOrgPerson extends AuthorizingAbstractCGI
+class CGI_LDAP_PosixGroup extends AuthorizingAbstractCGI
 {
     public function __construct()
     {
@@ -16,7 +16,7 @@ class CGI_LDAP_InetOrgPerson extends AuthorizingAbstractCGI
 
     public function processRequest()
     {
-        $cont = new LDAPInetOrgPersonController($this->reqMeth,$this->Authorization);
+        $cont = new LDAPPosixGroupController($this->reqMeth,$this->Authorization);
         $this->resp = $cont->processRequest();
     }
 }

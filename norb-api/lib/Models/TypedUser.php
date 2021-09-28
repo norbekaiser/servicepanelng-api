@@ -4,19 +4,19 @@ namespace norb_api\Models;
 
 require_once __DIR__ .'/User.php';
 
-class LDAPUser extends User
+class TypedUser extends User
 {
 
-    private $DN;
+    private $type;
 
-    public function getDN(): string
+    public function getType(): string
     {
-        return $this->DN;
+        return $this->type;
     }
 
-    public function setDN(string $DN): void
+    public function setType(string $type): void
     {
-        $this->DN = $DN;
+        $this->type = $type;
     }
 
     public function jsonSerialize()
@@ -24,7 +24,7 @@ class LDAPUser extends User
         return array_merge(
             parent::jsonSerialize(),
             array(
-                "dn" => $this->DN
+                "type" => $this->type
             )
         );
     }

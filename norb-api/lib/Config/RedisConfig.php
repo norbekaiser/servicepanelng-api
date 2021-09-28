@@ -2,11 +2,11 @@
 
 namespace norb_api\Config;
 
-require_once __DIR__ . '/Traits/Port.php';
-require_once __DIR__ . '/Traits/Password.php';
-require_once __DIR__ . '/Traits/Hostname.php';
-require_once __DIR__ . '/Traits/DatabaseID.php';
 require_once __DIR__ . '/Config.php';
+require_once __DIR__ . '/Traits/DatabaseID.php';
+require_once __DIR__ . '/Traits/Hostname.php';
+require_once __DIR__ . '/Traits/Password.php';
+require_once __DIR__ . '/Traits/Port.php';
 
 class RedisConfig extends Config
 {

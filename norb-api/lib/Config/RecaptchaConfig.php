@@ -2,10 +2,10 @@
 
 namespace norb_api\Config;
 
-require_once __DIR__ . '/Traits/Version.php';
-require_once __DIR__ . '/Traits/SecretKey.php';
-require_once __DIR__ . '/Traits/Enabled.php';
 require_once __DIR__ . '/Config.php';
+require_once __DIR__ . '/Traits/Enabled.php';
+require_once __DIR__ . '/Traits/SecretKey.php';
+require_once __DIR__ . '/Traits/Version.php';
 
 class RecaptchaConfig extends Config
 {

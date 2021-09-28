@@ -59,5 +59,16 @@ class LDAPInetOrgPerson extends LDAPUser
         $this->givenName = $givenName;
     }
 
-
+    public function jsonSerialize()
+    {
+        return
+        array_filter(
+            array_merge(parent::jsonSerialize(),
+            array(
+                "cn" => $this->cn,
+                "sn" => $this->sn,
+                "mail" => $this->mail,
+                "givenName" => $this->givenName
+        )));
+    }
 }

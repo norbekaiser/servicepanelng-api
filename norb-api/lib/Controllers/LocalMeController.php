@@ -2,27 +2,25 @@
 
 namespace norb_api\Controllers;
 
-require_once __DIR__ . '/AbstractHeaderController.php';
-require_once __DIR__ . '/../Models/LocalUser.php';
-require_once __DIR__ . '/../Gateways/SessionGateway.php';
-require_once __DIR__ . '/../Gateways/LocalUserGateway.php';
-require_once __DIR__ . '/../Gateways/LdapUserGateway.php';
-require_once __DIR__ . '/../Exceptions/HTTP422_UnprocessableEntity.php';
-require_once __DIR__ . '/../Exceptions/HTTP404_NotFound.php';
-require_once __DIR__ . '/../Exceptions/HTTP401_Unauthorized.php';
 require_once __DIR__ . '/../Config/RegistrationConfig.php';
+require_once __DIR__ . '/../Exceptions/HTTP401_Unauthorized.php';
+require_once __DIR__ . '/../Exceptions/HTTP403_Forbidden.php';
+require_once __DIR__ . '/../Exceptions/HTTP404_NotFound.php';
+require_once __DIR__ . '/../Exceptions/HTTP422_UnprocessableEntity.php';
+require_once __DIR__ . '/../Gateways/LdapUserGateway.php';
+require_once __DIR__ . '/../Gateways/LocalUserGateway.php';
+require_once __DIR__ . '/../Gateways/SessionGateway.php';
+require_once __DIR__ . '/../Models/LocalUser.php';
+require_once __DIR__ . '/AbstractSessionController.php';
 
-use norb_api\Models\LocalUser;
-use norb_api\Gateways\SessionGateway;
-use norb_api\Gateways\LocalUserGateway;
-use norb_api\Exceptions\HTTP401_Unauthorized;
-use norb_api\Exceptions\HTTP400_BadRequest;
 use norb_api\Config\RegistrationConfig;
+use norb_api\Exceptions\HTTP400_BadRequest;
+use norb_api\Exceptions\HTTP403_Forbidden;
+use norb_api\Gateways\LocalUserGateway;
 
-class LocalMeController extends AbstractHeaderController
+class LocalMeController extends AbstractSessionController
 {
     private $localUserGateway = null;
-    private $sessionGateway = null;
     private $local_user = null;
 
     /**
@@ -34,41 +32,21 @@ class LocalMeController extends AbstractHeaderController
     public function __construct(string $requestMethod,string $Authorization)
     {
         $this->localUserGateway = new LocalUserGateway();
-        $this->sessionGateway = new SessionGateway();
         parent::__construct($requestMethod,$Authorization);
     }
 
-    private function LocalUser_data_to_resp(LocalUser $user): array
-    {
-        return array(
-            'username' => $user->getUsername(),
-            'member_since' => $user->getMemberSince(),
-        );
-    }
-
-    /**
-     * Verifys that a local user has been set via parseAuthorization
-     * @throws HTTP401_Unauthorized
-     */
-    private function require_valid_session()
-    {
-        if(is_null($this->local_user))
-        {
-            throw new HTTP401_Unauthorized();
-        }
-    }
 
     protected function GetRequest()
     {
-        $this->require_valid_session();
+        $this->require_valid_local_user();
         $resp['status_code_header'] = 'HTTP/1.1 200 OK';
-        $resp['data'] = $this->LocalUser_data_to_resp($this->local_user);
+        $resp['data'] = $this->local_user;
         return $resp;
     }
 
     protected function PatchRequest()
     {
-        $this->require_valid_session();
+        $this->require_valid_local_user();
         $input = (array) json_decode(file_get_contents('php://input'), true);
         $this->validatePatchData($input);
         $resp['status_code_header'] = 'HTTP/1.1 200 OK';//ggf modified?
@@ -77,19 +55,25 @@ class LocalMeController extends AbstractHeaderController
         {
             $LocalUserGateway->ChangePassword($this->local_user,$input['password']);
         }
-        $resp['data'] = $this->LocalUser_data_to_resp($this->local_user);
+        $resp['data'] = $this->local_user;
         return $resp;
+    }
+
+    private function require_valid_local_user(){
+        if(is_null($this->local_user))
+        {
+            throw new HTTP403_Forbidden("Unauthorized Access");
+        }
     }
 
     /**
      * Parses The Authorization String, and create a session on demand
      */
-    protected function ParseAuthorization()
+    protected function ParseSession()
     {
         try
         {
-            $session = $this->sessionGateway->find_session($this->Authorization);
-            $this->local_user = $this->localUserGateway->findUserByUsrID($session->getUsrId());
+            $this->local_user = $this->localUserGateway->findUserByUsrID($this->Session->getUsrId());
         }
         catch (\Exception $e)
         {

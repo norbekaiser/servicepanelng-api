@@ -5,9 +5,9 @@ namespace norb_api\Gateways;
 require_once __DIR__ . '/../../Config/FriendlycaptchaConfig.php';
 require_once __DIR__ . '/../../Connectors/CurlConnector.php';
 
+use function curl_setopt;
 use norb_api\Config\FriendlycaptchaConfig;
 use norb_api\Connectors\CurlConnector;
-use function curl_setopt;
 
 trait FriendlycaptchaGateway
 {

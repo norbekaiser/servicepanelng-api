@@ -2,8 +2,8 @@
 
 namespace norb_api\CommonGatewayInterfaces;
 
-require_once __DIR__ . '/AuthorizingAbstractCGI.php';
 require_once __DIR__ . '/../Controllers/LocalMeController.php';
+require_once __DIR__ . '/AuthorizingAbstractCGI.php';
 
 use norb_api\Controllers\LocalMeController;
 

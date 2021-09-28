@@ -2,38 +2,38 @@
 
 namespace norb_api\Controllers;
 
-require_once __DIR__ . '/AbstractController.php';
-require_once __DIR__ . '/../Gateways/SessionGateway.php';
-require_once __DIR__ . '/../Gateways/RecaptchaV3Gateway.php';
-require_once __DIR__ . '/../Gateways/RecaptchaV2Gateway.php';
-require_once __DIR__ . '/../Gateways/FriendlycaptchaV1Gateway.php';
-require_once __DIR__ . '/../Gateways/LocalUserGateway.php';
-require_once __DIR__ . '/../Gateways/LocalLdapUserGateway.php';
-require_once __DIR__ . '/../Gateways/LdapUserGateway.php';
-require_once __DIR__ . '/../Exceptions/HTTP422_UnprocessableEntity.php';
-require_once __DIR__ . '/../Exceptions/HTTP400_BadRequest.php';
-require_once __DIR__ . '/../Exceptions/HTTP500_InternalServerError.php';
 require_once __DIR__ . '/../Config/CaptchaConfig.php';
 require_once __DIR__ . '/../Config/FriendlycaptchaConfig.php';
 require_once __DIR__ . '/../Config/RecaptchaConfig.php';
+require_once __DIR__ . '/../Exceptions/HTTP400_BadRequest.php';
+require_once __DIR__ . '/../Exceptions/HTTP422_UnprocessableEntity.php';
+require_once __DIR__ . '/../Exceptions/HTTP500_InternalServerError.php';
+require_once __DIR__ . '/../Gateways/FriendlycaptchaV1Gateway.php';
+require_once __DIR__ . '/../Gateways/LdapUserGateway.php';
+require_once __DIR__ . '/../Gateways/LocalLdapUserGateway.php';
+require_once __DIR__ . '/../Gateways/LocalUserGateway.php';
+require_once __DIR__ . '/../Gateways/RecaptchaV2Gateway.php';
+require_once __DIR__ . '/../Gateways/RecaptchaV3Gateway.php';
+require_once __DIR__ . '/../Gateways/SessionGateway.php';
+require_once __DIR__ . '/AbstractController.php';
 
 use norb_api\Config\CaptchaConfig;
 use norb_api\Config\FriendlycaptchaConfig;
 use norb_api\Config\RecaptchaConfig;
-use norb_api\Exceptions\HTTP500_InternalServerError;
-use norb_api\Gateways\FriendlycaptchaV1Gateway;
-use norb_api\Models\User;
-use norb_api\Models\LocalUser;
-use norb_api\Models\LDAPUser;
-use norb_api\Gateways\SessionGateway;
-use norb_api\Gateways\RecaptchaV3Gateway;
-use norb_api\Gateways\RecaptchaV2Gateway;
-use norb_api\Gateways\LocalUserGateway;
-use norb_api\Gateways\LocalLdapUserGateway;
-use norb_api\Gateways\LdapUserGateway;
-use norb_api\Exceptions\HTTP_Exception;
-use norb_api\Exceptions\HTTP422_UnprocessableEntity;
 use norb_api\Exceptions\HTTP400_BadRequest;
+use norb_api\Exceptions\HTTP422_UnprocessableEntity;
+use norb_api\Exceptions\HTTP500_InternalServerError;
+use norb_api\Exceptions\HTTP_Exception;
+use norb_api\Gateways\FriendlycaptchaV1Gateway;
+use norb_api\Gateways\LdapUserGateway;
+use norb_api\Gateways\LocalLdapUserGateway;
+use norb_api\Gateways\LocalUserGateway;
+use norb_api\Gateways\RecaptchaV2Gateway;
+use norb_api\Gateways\RecaptchaV3Gateway;
+use norb_api\Gateways\SessionGateway;
+use norb_api\Models\LDAPUser;
+use norb_api\Models\LocalUser;
+use norb_api\Models\User;
 
 class AuthController extends AbstractController
 {
@@ -84,7 +84,6 @@ class AuthController extends AbstractController
         {
 
         }
-
 
         //Check Against Local Database
         if(is_null($user))

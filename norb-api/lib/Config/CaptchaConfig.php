@@ -2,9 +2,9 @@
 
 namespace norb_api\Config;
 
+require_once __DIR__ . '/Config.php';
 require_once __DIR__ . '/Traits/Enabled.php';
 require_once __DIR__ . '/Traits/Type.php';
-require_once __DIR__ . '/Config.php';
 
 class CaptchaConfig extends Config
 {

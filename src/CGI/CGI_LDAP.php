@@ -2,8 +2,8 @@
 
 namespace servicepanel_ng;
 
-require_once __DIR__ . '/../Controllers/LDAPObjectClassController.php';
 require_once __DIR__ . '/../../norb-api/lib/CommonGatewayInterfaces/AuthorizingAbstractCGI.php';
+require_once __DIR__ . '/../Controllers/LDAPObjectClassController.php';
 
 use norb_api\CommonGatewayInterfaces\AuthorizingAbstractCGI;
 

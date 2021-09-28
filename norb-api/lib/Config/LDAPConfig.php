@@ -2,13 +2,13 @@
 
 namespace norb_api\Config;
 
-require_once __DIR__ . '/Traits/URI.php';
-require_once __DIR__ . '/Traits/Port.php';
-require_once __DIR__ . '/Traits/Enabled.php';
-require_once __DIR__ . '/Traits/BaseDN.php';
-require_once __DIR__ . '/Traits/AdminPassword.php';
-require_once __DIR__ . '/Traits/AdminDN.php';
 require_once __DIR__ . '/Config.php';
+require_once __DIR__ . '/Traits/AdminDN.php';
+require_once __DIR__ . '/Traits/AdminPassword.php';
+require_once __DIR__ . '/Traits/BaseDN.php';
+require_once __DIR__ . '/Traits/Enabled.php';
+require_once __DIR__ . '/Traits/Port.php';
+require_once __DIR__ . '/Traits/URI.php';
 
 class LDAPConfig extends Config
 {

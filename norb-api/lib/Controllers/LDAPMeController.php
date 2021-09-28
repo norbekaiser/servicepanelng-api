@@ -2,32 +2,30 @@
 
 namespace norb_api\Controllers;
 
-require_once __DIR__ . '/AbstractHeaderController.php';
-require_once __DIR__ . '/../Models/LDAPUser.php';
-require_once __DIR__ . '/../Gateways/SessionGateway.php';
-require_once __DIR__ . '/../Gateways/LocalLdapUserGateway.php';
-require_once __DIR__ . '/../Gateways/LdapUserGateway.php';
-require_once __DIR__ . '/../Exceptions/HTTP422_UnprocessableEntity.php';
+require_once __DIR__ . '/../Config/RegistrationConfig.php';
+require_once __DIR__ . '/../Exceptions/HTTP400_BadRequest.php';
 require_once __DIR__ . '/../Exceptions/HTTP401_Unauthorized.php';
 require_once __DIR__ . '/../Exceptions/HTTP403_Forbidden.php';
-require_once __DIR__ . '/../Exceptions/HTTP400_BadRequest.php';
-require_once __DIR__ . '/../Config/RegistrationConfig.php';
+require_once __DIR__ . '/../Exceptions/HTTP422_UnprocessableEntity.php';
+require_once __DIR__ . '/../Gateways/LdapUserGateway.php';
+require_once __DIR__ . '/../Gateways/LocalLdapUserGateway.php';
+require_once __DIR__ . '/../Gateways/SessionGateway.php';
+require_once __DIR__ . '/../Models/LDAPUser.php';
+require_once __DIR__ . '/AbstractSessionController.php';
 
-
-use norb_api\Models\LDAPUser;
-use norb_api\Gateways\SessionGateway;
-use norb_api\Gateways\LocalLdapUserGateway;
-use norb_api\Gateways\LdapUserGateway;
-use norb_api\Exceptions\HTTP422_UnprocessableEntity;
+use norb_api\Config\RegistrationConfig;
+use norb_api\Exceptions\HTTP400_BadRequest;
 use norb_api\Exceptions\HTTP401_Unauthorized;
 use norb_api\Exceptions\HTTP403_Forbidden;
-use norb_api\Exceptions\HTTP400_BadRequest;
-use norb_api\Config\RegistrationConfig;
+use norb_api\Exceptions\HTTP422_UnprocessableEntity;
+use norb_api\Gateways\LdapUserGateway;
+use norb_api\Gateways\LocalLdapUserGateway;
+use norb_api\Gateways\SessionGateway;
+use norb_api\Models\LDAPUser;
 
-class LDAPMeController extends AbstractHeaderController
+class LDAPMeController extends AbstractSessionController
 {
     private $localLdapUserGateway = null;
-    private $sessionGateway = null;
     private $ldap_user = null;
 
     /**
@@ -39,29 +37,9 @@ class LDAPMeController extends AbstractHeaderController
     public function __construct(string $requestMethod,string $Authorization)
     {
         $this->localLdapUserGateway = new LocalLdapUserGateway();
-        $this->sessionGateway = new SessionGateway();
         parent::__construct($requestMethod,$Authorization);
     }
 
-    private function LdapUser_data_to_resp(LDAPUser $user): array
-    {
-        return array(
-            'dn' => $user->getDN(),
-            'member_since' => $user->getMemberSince()
-        );
-    }
-
-    /**
-     * Verifys that a ldap user has been set via parseAuthorization
-     * @throws HTTP401_Unauthorized
-     */
-    private function require_valid_session()
-    {
-        if(is_null($this->ldap_user))
-        {
-            throw new HTTP401_Unauthorized();
-        }
-    }
 
     /**
      * Returns the User Data
@@ -71,7 +49,7 @@ class LDAPMeController extends AbstractHeaderController
      */
     protected function GetRequest()
     {
-        $this->require_valid_session();
+        $this->require_valid_ldap_user();
         $LdapUserGateway = new LdapUserGateway();
         try{
             $ldapuser = $LdapUserGateway->findByDN($this->ldap_user);
@@ -81,7 +59,7 @@ class LDAPMeController extends AbstractHeaderController
             throw new HTTP422_UnprocessableEntity();
         }
         $resp['status_code_header'] = 'HTTP/1.1 200 OK';
-        $resp['data'] = $this->LdapUser_data_to_resp($ldapuser);
+        $resp['data'] = $ldapuser;
         return $resp;
     }
 
@@ -94,7 +72,7 @@ class LDAPMeController extends AbstractHeaderController
      */
     protected function PatchRequest()
     {
-        $this->require_valid_session();
+        $this->require_valid_ldap_user();
         $input = (array) json_decode(file_get_contents('php://input'), true);
         $this->validatePatchData($input);
         $LdapUserGateway = new LdapUserGateway();
@@ -118,15 +96,21 @@ class LDAPMeController extends AbstractHeaderController
         return $resp;
     }
 
+    private function require_valid_ldap_user(){
+        if(is_null($this->ldap_user))
+        {
+            throw new HTTP403_Forbidden("Unauthorized Access");
+        }
+    }
+
     /**
      * Parses The Authorization String, and create a session on demand
      */
-    protected function ParseAuthorization()
+    protected function ParseSession()
     {
         try
         {
-            $session = $this->sessionGateway->find_session($this->Authorization);
-            $this->ldap_user = $this->localLdapUserGateway->findUserID($session->getUsrId());
+            $this->ldap_user = $this->localLdapUserGateway->findUserID($this->Session->getUsrId());
         }
         catch (\Exception $e)
         {

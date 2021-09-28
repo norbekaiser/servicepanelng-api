@@ -83,5 +83,18 @@ class LDAPPosixAccount extends LDAPUser
         $this->loginShell = $loginShell;
     }
 
-
+    public function jsonSerialize()
+    {
+        return
+            array_filter(
+                array_merge(parent::jsonSerialize(),
+                    array(
+                        "cn" => $this->cn,
+                        "uid" => $this->uid,
+                        "uidNumber" => $this->uidNumber,
+                        "gidNumber" => $this->gidNUmber,
+                        "homeDirectory" => $this->homeDirectory,
+                        "loginShell" => $this->loginShell,
+                    )));
+    }
 }

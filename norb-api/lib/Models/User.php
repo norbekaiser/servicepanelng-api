@@ -2,7 +2,7 @@
 
 namespace norb_api\Models;
 
-class User
+class User implements \JsonSerializable
 {
     protected $usr_id;
     protected $member_since;
@@ -28,5 +28,10 @@ class User
     }
 
 
-
+    public function jsonSerialize()
+    {
+        return array(
+            "member_since" => $this->member_since
+        );
+    }
 }

@@ -2,12 +2,12 @@
 
 namespace norb_api\Gateways;
 
-require_once __DIR__ . '/Traits/RedisGateway.php';
-require_once __DIR__ . '/../Models/User.php';
 require_once __DIR__ . '/../Models/Session.php';
+require_once __DIR__ . '/../Models/User.php';
+require_once __DIR__ . '/Traits/RedisGateway.php';
 
-use norb_api\Models\User;
 use norb_api\Models\Session;
+use norb_api\Models\User;
 
 class SessionGateway
 {

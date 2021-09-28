@@ -2,8 +2,8 @@
 
 namespace norb_api\Gateways;
 
-require_once __DIR__ . '/Traits/SQLGateway.php';
 require_once __DIR__ . '/../Models/LocalUser.php';
+require_once __DIR__ . '/Traits/SQLGateway.php';
 
 use norb_api\Models\User;
 

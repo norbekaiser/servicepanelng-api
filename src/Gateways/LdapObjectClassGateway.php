@@ -2,12 +2,12 @@
 
 namespace servicepanel_ng;
 
-require_once __DIR__ . '/../Models/LDAPObjectClass.php';
-require_once __DIR__ . '/../../norb-api/lib/Models/LDAPUser.php';
 require_once __DIR__ . '/../../norb-api/lib/Gateways/Traits/LDAPGateway.php';
+require_once __DIR__ . '/../../norb-api/lib/Models/LDAPUser.php';
+require_once __DIR__ . '/../Models/LDAPObjectClass.php';
 
-use norb_api\Models\LDAPUser;
 use norb_api\Gateways\LDAPGateway;
+use norb_api\Models\LDAPUser;
 
 class LDAPObjectClassGateway
 {
@@ -21,7 +21,7 @@ class LDAPObjectClassGateway
     public function find(LDAPUser $LDAPUser): LDAPObjectClass
     {
         $ldapObjectClass = new LDAPObjectClass();
-        $search = ldap_read($this->ldap_db,$LDAPUser->getDN(),"objectClass=*",['objectClass']);
+        $search = ldap_read($this->ldap_db,$LDAPUser->getDN(),"objectClass=*",['dn','objectClass']);
         $data = ldap_get_entries($this->ldap_db,$search);
 
         if(!isset($data[0]))

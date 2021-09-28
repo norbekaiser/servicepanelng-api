@@ -2,12 +2,12 @@
 
 namespace norb_api\Connectors;
 
-require_once __DIR__ . '/DatabaseConnector.php';
-require_once __DIR__ . '/../Exceptions/NoConnectivitySQL.php';
 require_once __DIR__ . '/../Config/SQLConfig.php';
+require_once __DIR__ . '/../Exceptions/NoConnectivitySQL.php';
+require_once __DIR__ . '/DatabaseConnector.php';
 
-use norb_api\Exceptions\NoConnectivitySQL;
 use norb_api\Config\SQLConfig;
+use norb_api\Exceptions\NoConnectivitySQL;
 
 class DatabaseConnectorSQL extends DatabaseConnector
 {

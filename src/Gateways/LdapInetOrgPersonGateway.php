@@ -2,12 +2,12 @@
 
 namespace servicepanel_ng;
 
-require_once __DIR__ . '/../Models/LDAPInetOrgPerson.php';
-require_once __DIR__ . '/../../norb-api/lib/Models/LDAPUser.php';
 require_once __DIR__ . '/../../norb-api/lib/Gateways/Traits/LDAPGateway.php';
+require_once __DIR__ . '/../../norb-api/lib/Models/LDAPUser.php';
+require_once __DIR__ . '/../Models/LDAPInetOrgPerson.php';
 
-use norb_api\Models\LDAPUser;
 use norb_api\Gateways\LDAPGateway;
+use norb_api\Models\LDAPUser;
 
 class LdapInetOrgPersonGateway
 {
@@ -21,7 +21,7 @@ class LdapInetOrgPersonGateway
     public function find(LDAPUser $LDAPUser): LDAPInetOrgPerson
     {
         $ldapInetOrgPerson = new LDAPInetOrgPerson();
-        $search = ldap_read($this->ldap_db,$LDAPUser->getDN(),"objectClass=InetOrgPerson");
+        $search = ldap_read($this->ldap_db,$LDAPUser->getDN(),"objectClass=InetOrgPerson",["dn","cn","sn","givenName","mail"]);
         $data = ldap_get_entries($this->ldap_db,$search);
 
         if(!isset($data[0]))
@@ -33,7 +33,6 @@ class LdapInetOrgPersonGateway
         $ldapInetOrgPerson->setCN($data[0]['cn'][0]);
         $ldapInetOrgPerson->setSN($data[0]['sn'][0]);
         //MAY
-
         if(isset($data[0]['mail']['count'])&& $data[0]['mail']['count']==1){
             $ldapInetOrgPerson->setMail($data[0]['mail'][0]);
         }

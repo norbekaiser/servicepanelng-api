@@ -1,10 +1,10 @@
 <?php
 
-require_once __DIR__ . '/../lib/Connectors/DatabaseConnectorSQL.php';
 require_once __DIR__ . '/../lib/Config/SQLConfig.php';
+require_once __DIR__ . '/../lib/Connectors/DatabaseConnectorSQL.php';
 
-use norb_api\Connectors\DatabaseConnectorSQL;
 use norb_api\Config\SQLConfig;
+use norb_api\Connectors\DatabaseConnectorSQL;
 
 $return=0;
 

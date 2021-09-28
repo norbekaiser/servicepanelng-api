@@ -2,12 +2,12 @@
 
 namespace norb_api\Connectors;
 
-require_once __DIR__ . '/DatabaseConnector.php';
-require_once __DIR__ . '/../Exceptions/NoConnectivityRedis.php';
 require_once __DIR__ . '/../Config/RedisConfig.php';
+require_once __DIR__ . '/../Exceptions/NoConnectivityRedis.php';
+require_once __DIR__ . '/DatabaseConnector.php';
 
-use norb_api\Exceptions\NoConnectivityRedis;
 use norb_api\Config\RedisConfig;
+use norb_api\Exceptions\NoConnectivityRedis;
 
 class DatabaseConnectorRedis extends DatabaseConnector
 {

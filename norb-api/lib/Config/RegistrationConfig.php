@@ -2,11 +2,11 @@
 
 namespace norb_api\Config;
 
-require_once __DIR__ . '/Traits/RequiresLetters.php';
-require_once __DIR__ . '/Traits/RequiresDigits.php';
-require_once __DIR__ . '/Traits/MinimumLength.php';
-require_once __DIR__ . '/Traits/Enabled.php';
 require_once __DIR__ . '/Config.php';
+require_once __DIR__ . '/Traits/Enabled.php';
+require_once __DIR__ . '/Traits/MinimumLength.php';
+require_once __DIR__ . '/Traits/RequiresDigits.php';
+require_once __DIR__ . '/Traits/RequiresLetters.php';
 
 class RegistrationConfig extends Config
 {

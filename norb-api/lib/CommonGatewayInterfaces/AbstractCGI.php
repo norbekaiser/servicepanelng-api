@@ -2,11 +2,11 @@
 
 namespace norb_api\CommonGatewayInterfaces;
 
-require_once __DIR__ . '/../Exceptions/HTTP_Exception.php';
 require_once __DIR__ . '/../Exceptions/Database_Exception.php';
+require_once __DIR__ . '/../Exceptions/HTTP_Exception.php';
 
-use norb_api\Exceptions\HTTP_Exception;
 use norb_api\Exceptions\Database_Exception;
+use norb_api\Exceptions\HTTP_Exception;
 
 abstract class AbstractCGI
 {
@@ -40,7 +40,7 @@ abstract class AbstractCGI
         $this->answerRequest();
     }
 
-    public function sendHeaders()
+    public function sendHeaders() : void
     {
         header("Access-Control-Allow-Origin: *");
         header("Content-Type: application/json; charset=UTF-8");
@@ -51,7 +51,7 @@ abstract class AbstractCGI
 
     public abstract function processRequest();
 
-    public function answerRequest()
+    public function answerRequest() : void
     {
         header($this->resp['status_code_header']);
         if(($this->resp['error'])){

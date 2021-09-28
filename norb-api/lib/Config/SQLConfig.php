@@ -2,13 +2,13 @@
 
 namespace norb_api\Config;
 
-require_once __DIR__ . '/Traits/Username.php';
-require_once __DIR__ . '/Traits/UnixSocket.php';
-require_once __DIR__ . '/Traits/Port.php';
-require_once __DIR__ . '/Traits/Password.php';
-require_once __DIR__ . '/Traits/Hostname.php';
-require_once __DIR__ . '/Traits/DatabaseName.php';
 require_once __DIR__ . '/Config.php';
+require_once __DIR__ . '/Traits/DatabaseName.php';
+require_once __DIR__ . '/Traits/Hostname.php';
+require_once __DIR__ . '/Traits/Password.php';
+require_once __DIR__ . '/Traits/Port.php';
+require_once __DIR__ . '/Traits/UnixSocket.php';
+require_once __DIR__ . '/Traits/Username.php';
 
 class SQLConfig extends Config
 {

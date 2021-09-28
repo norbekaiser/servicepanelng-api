@@ -4,4 +4,4 @@ uri = 'ldap://ldap.example.com'
 port = 389
 admin_dn = 'cn=admin,dc=ldap,dc=example,dc=com'
 admin_pw = 'password'
-base_dn = 'ou=users,dc=ldap,dc=example,dc=com'
+base_dn = 'dc=ldap,dc=example,dc=com'

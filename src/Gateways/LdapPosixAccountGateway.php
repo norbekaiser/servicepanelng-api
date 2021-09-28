@@ -2,12 +2,12 @@
 
 namespace servicepanel_ng;
 
-require_once __DIR__ . '/../Models/LDAPPosixAccount.php';
-require_once __DIR__ . '/../../norb-api/lib/Models/LDAPUser.php';
 require_once __DIR__ . '/../../norb-api/lib/Gateways/Traits/LDAPGateway.php';
+require_once __DIR__ . '/../../norb-api/lib/Models/LDAPUser.php';
+require_once __DIR__ . '/../Models/LDAPPosixAccount.php';
 
-use norb_api\Models\LDAPUser;
 use norb_api\Gateways\LDAPGateway;
+use norb_api\Models\LDAPUser;
 
 class LdapPosixAccountGateway
 {
@@ -21,7 +21,7 @@ class LdapPosixAccountGateway
     public function find(LDAPUser $LDAPUser): LDAPPosixAccount
     {
         $ldapPosixAccount = new LDAPPosixAccount();
-        $search = ldap_read($this->ldap_db,$LDAPUser->getDN(),"objectClass=PosixAccount");
+        $search = ldap_read($this->ldap_db,$LDAPUser->getDN(),"objectClass=PosixAccount",["dn","cn","uid","uidNumber","gidNumber","homeDirectory","loginshell"]);
         $data = ldap_get_entries($this->ldap_db,$search);
 
         if(!isset($data[0]))

@@ -2,20 +2,19 @@
 
 namespace servicepanel_ng;
 
-require_once __DIR__ . '/../Gateways/LdapInetOrgPersonGateway.php';
-require_once __DIR__ . '/../../norb-api/lib/Gateways/SessionGateway.php';
-require_once __DIR__ . '/../../norb-api/lib/Gateways/LocalLdapUserGateway.php';
+require_once __DIR__ . '/../../norb-api/lib/Controllers/AbstractSessionController.php';
+require_once __DIR__ . '/../../norb-api/lib/Exceptions/HTTP403_Forbidden.php';
 require_once __DIR__ . '/../../norb-api/lib/Exceptions/HTTP404_NotFound.php';
-require_once __DIR__ . '/../../norb-api/lib/Exceptions/HTTP401_Unauthorized.php';
-require_once __DIR__ . '/../../norb-api/lib/Controllers/AbstractHeaderController.php';
+require_once __DIR__ . '/../../norb-api/lib/Gateways/LocalLdapUserGateway.php';
+require_once __DIR__ . '/../../norb-api/lib/Gateways/SessionGateway.php';
+require_once __DIR__ . '/../Gateways/LdapInetOrgPersonGateway.php';
 
-use norb_api\Gateways\SessionGateway;
-use norb_api\Gateways\LocalLdapUserGateway;
+use norb_api\Controllers\AbstractSessionController;
+use norb_api\Exceptions\HTTP403_Forbidden;
 use norb_api\Exceptions\HTTP404_NotFound;
-use norb_api\Exceptions\HTTP401_Unauthorized;
-use norb_api\Controllers\AbstractHeaderController;
+use norb_api\Gateways\LocalLdapUserGateway;
 
-class LDAPInetOrgPersonController extends AbstractHeaderController
+class LDAPInetOrgPersonController extends AbstractSessionController
 {
     private $LocalLDAPUser = null;
     private $LdapinetOrgPersonGateway = null;
@@ -26,14 +25,12 @@ class LDAPInetOrgPersonController extends AbstractHeaderController
         parent::__construct($requestMethod, $Authorization);
     }
 
-    protected function ParseAuthorization()
+    protected function ParseSession()
     {
         try
         {
-            $SessionGateway = new SessionGateway();
-            $session = $SessionGateway->find_session($this->Authorization);
             $localLdapUserGateway = new LocalLdapUserGateway();
-            $this->LocalLDAPUser = $localLdapUserGateway->findUserID($session->getUsrId());
+            $this->LocalLDAPUser = $localLdapUserGateway->findUserID($this->Session->getUsrId());
         }
         catch (\Exception $e)
         {
@@ -41,17 +38,17 @@ class LDAPInetOrgPersonController extends AbstractHeaderController
         }
     }
 
-    private function require_valid_session()
+    private function require_valid_local_ldap_user()
     {
         if(is_null($this->LocalLDAPUser))
         {
-            throw new HTTP401_Unauthorized();
+            throw new HTTP403_Forbidden("User must be an LDAP User to perform this request");
         }
     }
 
     protected function GetRequest()
     {
-        $this->require_valid_session();
+        $this->require_valid_local_ldap_user();
         try{
             $data = $this->LdapinetOrgPersonGateway->find($this->LocalLDAPUser);
         }
@@ -60,15 +57,7 @@ class LDAPInetOrgPersonController extends AbstractHeaderController
         }
 
         $resp['status_code_header'] = 'HTTP/1.1 200 OK';
-        $resp['data'] = array(
-            'dn' => $data->getDN(),
-            'cn' => $data->getCN(),
-            'sn' => $data->getSN(),
-            'mail' => $data->getMail(),
-            'givenName' => $data->getGivenName()
-        );
+        $resp['data'] = $data;
         return $resp;
     }
-
-
 }

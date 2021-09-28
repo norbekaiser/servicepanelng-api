@@ -32,4 +32,15 @@ class LDAPObjectClass extends LDAPUser
     {
         $this->inetOrgPerson = $inetOrgPerson;
     }
+
+    public function jsonSerialize()
+    {
+        return
+        array_filter(
+            array_merge(parent::jsonSerialize(),
+            array(
+                "posixAccount" => $this->posixAccount,
+                "inetOrgPerson" => $this->inetOrgPerson
+        )));
+    }
 }

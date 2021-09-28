@@ -24,7 +24,7 @@ Authorization: 1234567890
 ```
 
 ### On Success
-It will return the PosixAccount Data, mainly
+It will return the PosixAccount Data, optional values will be omitted 
  * dn
  * cn
  * uid
@@ -55,8 +55,16 @@ It will return the PosixAccount Data, mainly
 ```json
 ```
 
+### Local User Requests LDAP Data
+Will be returned if despite not beeing an ldap user
+```http request
+'HTTP/1.1 403 Forbidden'
+```
+```json
+```
+
 ### False LDAP Object Class
-Will be returned if despite not beeing in the class it is requested
+Will be returned if a valid ldap user despite not beeing in the class requests data for this objectclass
 ```http request
 'HTTP/1.1 404 Unauthorized'
 ```
