@@ -6,24 +6,26 @@ require_once __DIR__ . '/../../norb-api/lib/Controllers/AbstractSessionControlle
 require_once __DIR__ . '/../../norb-api/lib/Exceptions/HTTP204_NoContent.php';
 require_once __DIR__ . '/../../norb-api/lib/Exceptions/HTTP403_Forbidden.php';
 require_once __DIR__ . '/../../norb-api/lib/Exceptions/HTTP404_NotFound.php';
+require_once __DIR__ . '/../../norb-api/lib/Gateways/LdapUserGateway.php';
 require_once __DIR__ . '/../../norb-api/lib/Gateways/LocalLdapUserGateway.php';
 require_once __DIR__ . '/../../norb-api/lib/Gateways/SessionGateway.php';
+require_once __DIR__ . '/../Gateways/LdapGroupOfNamesGateway.php';
 require_once __DIR__ . '/../Gateways/LdapPosixAccountGateway.php';
-require_once __DIR__ . '/../Gateways/LdapPosixGroupGateway.php';
 
 use norb_api\Controllers\AbstractSessionController;
 use norb_api\Exceptions\HTTP204_NoContent;
 use norb_api\Exceptions\HTTP403_Forbidden;
+use norb_api\Gateways\LdapUserGateway;
 use norb_api\Gateways\LocalLdapUserGateway;
 
-class LDAPPosixGroupController extends AbstractSessionController
+class LDAPGroupOfNamesController extends AbstractSessionController
 {
-    private $PosixUser = null;
-    private $LdapPosixGroupGateway = null;
+    private $LdapUser = null;
+    private $LdapGroupOfNamesGateway = null;
 
     public function __construct(string $requestMethod, string $Authorization)
     {
-        $this->LdapPosixGroupGateway = new LdapPosixGroupGateway();
+        $this->LdapGroupOfNamesGateway = new LdapGroupOfNamesGateway();
         parent::__construct($requestMethod, $Authorization);
     }
 
@@ -33,12 +35,12 @@ class LDAPPosixGroupController extends AbstractSessionController
         {
             $localLdapUserGateway = new LocalLdapUserGateway();
             $LocalLDAPUser = $localLdapUserGateway->findUserID($this->Session->getUsrId());
-            $ldapPosixAccountGateway = new LdapPosixAccountGateway();
-            $this->PosixUser = $ldapPosixAccountGateway->find($LocalLDAPUser);
+            $ldapUserGateway = new LdapUserGateway();
+            $this->LdapUser = $ldapUserGateway->findByDN($LocalLDAPUser);
         }
         catch (\Exception $e)
         {
-            $this->PosixUser= null;
+            $this->LdapUser= null;
         }
     }
 
@@ -46,9 +48,9 @@ class LDAPPosixGroupController extends AbstractSessionController
     private function require_valid_posix_user()
     {
         $this->require_valid_session();
-        if(is_null($this->PosixUser))
+        if(is_null($this->LdapUser))
         {
-            throw new HTTP403_Forbidden("Only LDAP Posix Users can access their PosixGroup Memberships");
+            throw new HTTP403_Forbidden("Only LDAP Users can access their GroupOfNames Memberships");
         }
     }
 
@@ -57,12 +59,13 @@ class LDAPPosixGroupController extends AbstractSessionController
         $this->require_valid_posix_user();
         try
         {
-            $data = $this->LdapPosixGroupGateway->findAll($this->PosixUser);
+            $data = $this->LdapGroupOfNamesGateway->findAll($this->LdapUser);
         }
         catch (\Exception $e)
         {
-            throw new HTTP204_NoContent("No PosixGroups could be found");
+            throw new HTTP204_NoContent("No GroupOfNames could be found");
         }
+
         $resp['status_code_header'] = 'HTTP/1.1 200 OK';
         $resp['data'] = $data;
         return $resp;

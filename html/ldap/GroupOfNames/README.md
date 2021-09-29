@@ -1,4 +1,4 @@
-# Endpoint: {api_url}/ldap/PosixGroup/
+# Endpoint: {api_url}/ldap/GroupOfNames/
 This Endpoint is Responsible for Giving Additional User Data from LDAP, specifically Posix Account Data
 
 # HTTP Requests
@@ -24,10 +24,9 @@ Authorization: 1234567890
 ```
 
 ### On Success
-It will return an array of PosixGroup Data
+It will return an array of GroupOfNames Data
  * dn
  * cn
- * gidNumber
 
 ```http request
 'HTTP/1.1 200 OK'
@@ -36,13 +35,11 @@ It will return an array of PosixGroup Data
 [
   {
     "dn": "cn=mygroup,ou=groups,dc=ldpsrv,dc=example,dc=com",
-    "cn": "mygroup",
-    "gidNumber": 1501
+    "cn": "mygroup"
   },
   {
     "dn": "cn=mygroup2,ou=groups,dc=ldpsrv,dc=example,dc=com",
-    "cn": "mygroup2",
-    "gidNumber": 1502
+    "cn": "mygroup2"
   }
 ]
 ```
@@ -62,7 +59,7 @@ It will return an array of PosixGroup Data
 ```
 
 ### False LDAP Object Class
-Will be returned if despite not beeing in the class it is requested, only posixUser may find PosixGroups, however maybe migrate to 403 instead since this can not be fixed with proper authroization
+Will be returned if despite not beeing in an LDAP User it is requested 
 ```http request
 'HTTP/1.1 403 Forbidden'
 ```
