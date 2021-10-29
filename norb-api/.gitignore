@@ -1,4 +1,0 @@
-config/*.ini
-docker-compose.yml
-Dockerfile
-*.html
