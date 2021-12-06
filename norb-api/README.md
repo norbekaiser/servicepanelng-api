@@ -12,7 +12,8 @@ it also provides simple User backend.
  * Redis Session
  * Captcha Support
     * [Friendlycaptcha Support](http://friendlycaptcha.com)     
-    * [Google RecaptchaV2 /RecaptchaV3 Support](https://www.google.com/recaptcha/about/)
+    * [Google RecaptchaV2 Support](https://www.google.com/recaptcha/about/)
+    * [Google RecaptchaV3 Support](https://www.google.com/recaptcha/about/)
  * Gateways to SQL, LDAP, Redis, Captcha Providers
 
 
@@ -24,7 +25,7 @@ it also provides simple User backend.
  * php-ldap
  * php-curl
 
- ## Documentation
+## Documentation
   * [Doxygen](https://nruehl.gitlabpages.norbert-ruehl.de/norb-api/)
 
 ## Example Projects
