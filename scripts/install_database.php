@@ -13,8 +13,8 @@
 ?>
 <?php
 
-require_once __DIR__ . '/../lib/Config/SQLConfig.php';
-require_once __DIR__ . '/../lib/Connectors/DatabaseConnectorSQL.php';
+require_once __DIR__ . '/../core/Config/SQLConfig.php';
+require_once __DIR__ . '/../core/Connectors/DatabaseConnectorSQL.php';
 
 use norb_api\Config\SQLConfig;
 use norb_api\Connectors\DatabaseConnectorSQL;

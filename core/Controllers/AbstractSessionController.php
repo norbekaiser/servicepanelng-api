@@ -18,8 +18,8 @@ namespace norb_api\Controllers;
 use norb_api\Exceptions\HTTP401_Unauthorized;
 use norb_api\Gateways\SessionGateway;
 
-require_once __DIR__ . '/../../lib/Gateways/SessionGateway.php';
-require_once __DIR__ . '/../../lib/Exceptions/HTTP401_Unauthorized.php';
+require_once __DIR__ . '/../../core/Gateways/SessionGateway.php';
+require_once __DIR__ . '/../../core/Exceptions/HTTP401_Unauthorized.php';
 require_once __DIR__ . '/AbstractHeaderController.php';
 
 abstract class AbstractSessionController extends AbstractHeaderController

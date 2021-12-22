@@ -13,7 +13,7 @@
 ?>
 <?php
 
-require_once __DIR__ . '/../lib/Gateways/SessionGateway.php';
+require_once __DIR__ . '/../core/Gateways/SessionGateway.php';
 
 use norb_api\Gateways\SessionGateway;
 
